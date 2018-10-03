@@ -108,7 +108,8 @@ const (
 )
 
 const severityChar = "IWEF"
-const configPath = "/etc/glog/glog.json"
+const configPathLinux = "/etc/glog/glog.json"
+const configPathWin = "D:/glog/glog.json"
 
 var severityName = []string{
 	infoLog:    "INFO",
@@ -399,12 +400,19 @@ type flushSyncWriter interface {
 }
 
 func InitConfig() error {
-	_, err := os.Stat(configPath)
+	var config string
+	if runtime.GOOS == "linux" {
+		config = configPathLinux
+	} else if runtime.GOOS == "windows" {
+		config = configPathWin
+	}
+
+	_, err := os.Stat(config)
 	if err != nil && os.IsNotExist(err) {
 		return err
 	}
 
-	data, err := ioutil.ReadFile(configPath)
+	data, err := ioutil.ReadFile(config)
 	if err != nil {
 		return err
 	}
